@@ -1,0 +1,108 @@
+
+// const product = [];
+import path from "path";
+import fs, { readFile } from "fs";
+import { json } from "body-parser";
+
+const p = path.join(path.dirname(require.main.filename),'data','product.json');
+import Cart from "./cart";
+
+
+const getProductFromFile = (cb)=>{
+    fs.readFile(p,(err,filecontent)=>{
+        if(err){
+            cb([]);
+            // console.log("this is if ",err)
+        }
+    else{
+        // console.log("this is err",filecontent);
+             if(filecontent!==""){
+                cb(JSON.parse(filecontent));
+             }
+            else{
+                cb([]);
+            }
+     
+    }
+         
+   
+    });
+}
+
+/*
+class constructor is here
+
+*/
+
+
+
+export class Porduct {
+
+/**
+ * 
+ * @param {this was product} title 
+ */
+
+    constructor({id,title,price,description,imageurl}){
+        this.id = id;
+        this.title=title;
+        this.imageurl = imageurl;
+        this.price = price;
+        this.description = description;
+    }
+     
+ save(){  
+    
+     getProductFromFile((product)=>{
+         console.log("id",this.id);
+         if(this.id){
+            console.log("id====>",this.id);
+               let exitingproduct  = product.findIndex(prod =>prod.id == this.id);
+              console.log("exitingProduct inside",exitingproduct);
+               const updatedArray = [...product];
+               updatedArray[exitingproduct] = this;
+               fs.writeFile(p,JSON.stringify(updatedArray),err=>{
+                console.log(err);
+
+            });
+         return;   
+         }
+         console.log("go inside else block")
+         this.id = Math.random().toString();
+        product.push(this);
+        fs.writeFile(p,JSON.stringify(product),err=>{
+            console.log(err);
+        });
+     });
+ }
+
+static fetchall(cb){
+    getProductFromFile(cb);
+   
+ }
+
+
+ static findByID(id,cb){
+               
+    getProductFromFile(product=>{
+        let productdata = product.find (p=>p.id==id);
+        cb(productdata);
+    })
+ }
+
+
+ static deleteProduct(id){
+    getProductFromFile(product=>{
+        const productx = product.find(prod =>prod.id===id);
+        let productdata = product.filter(prod=>prod.id!==id);
+        fs.writeFile(p,JSON.stringify(productdata),err=>{
+                  if(!err){
+                    
+                       Cart.deleteCartProduct(id,productx.price);
+                  }
+        });
+    })
+ }
+
+
+}

@@ -1,0 +1,30 @@
+<%-include("../includes/head") %>
+
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/product.css">
+</head>
+<body>
+    <%-include("../includes/navigation")  %>
+          <main>
+              <%if(products.length>0){%>
+                   <ul>
+                       <% products.forEach(item=>{%>
+                        
+                            <li>
+                                <div style="display: flex; flex-direction:row; justify-content:flex-start;align-items:center;">
+                                    <p style="margin-right:2rem;"><%=item.productdata.title%> (<%=item.qty %>)</p>
+                                      <form action="/cart-delet-Item" method="post">
+                                        <input type="hidden" name="productId" value="<%=item.productdata.id %>" />
+                                     <button class="btn" type="submit"> Delete</button>
+                                    </form>
+                            </div>
+                            </li> 
+
+                     
+                        <%})%>
+                   </ul>
+              <%} else{%>
+                   <h1>Your Cart is Empty</h1>
+                <%}%>
+          </main>
+    <%-include("../includes/end")%>
